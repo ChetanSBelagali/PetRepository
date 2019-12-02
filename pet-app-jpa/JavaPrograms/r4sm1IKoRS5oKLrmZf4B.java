@@ -1,0 +1,1 @@
+class r4sm1IKoRS5oKLrmZf4B{public static void main(String[] args){System.out.println("Hello");}}
