@@ -22,7 +22,7 @@ public class Function implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private int functionId;
 
 	@NotNull
 	private double businessSize;
@@ -43,8 +43,13 @@ public class Function implements Serializable {
 	@OneToMany(mappedBy = "function")
 	private Set<Scenario> scenario=new HashSet<Scenario>();
 
-	public int getId() {
-		return id;
+   
+	public int getFunctionId() {
+		return functionId;
+	}
+
+	public void setFunctionId(int functionId) {
+		this.functionId = functionId;
 	}
 
 	public double getBusinessSize() {
@@ -71,9 +76,6 @@ public class Function implements Serializable {
 		return scenario;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	public void setBusinessSize(double businessSize) {
 		this.businessSize = businessSize;
@@ -99,11 +101,4 @@ public class Function implements Serializable {
 		this.scenario = scenario;
 	}
 
-	@Override
-	public String toString() {
-		return "Function [id=" + id + ", businessSize=" + businessSize + ", businessValue=" + businessValue
-				+ ", functionDesc=" + functionDesc + ", functionName=" + functionName + ", domain=" + domain
-				+ ", scenario=" + scenario + "]";
-	}
-		
 }

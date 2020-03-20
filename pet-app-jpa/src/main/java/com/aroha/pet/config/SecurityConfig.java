@@ -1,5 +1,6 @@
 package com.aroha.pet.config;
 
+import com.aroha.pet.payload.JwtAuthenticationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import com.aroha.pet.security.CustomUserDetailsService;
 import com.aroha.pet.security.JwtAuthenticationEntryPoint;
 import com.aroha.pet.security.JwtAuthenticationFilter;
@@ -25,76 +25,87 @@ import com.aroha.pet.security.JwtAuthenticationFilter;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
-		securedEnabled = true,
-		jsr250Enabled = true,
-		prePostEnabled = true
+        securedEnabled = true,
+        jsr250Enabled = true,
+        prePostEnabled = true
 )
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    CustomUserDetailsService customUserDetailsService;
 
-	@Autowired
-	private JwtAuthenticationEntryPoint unauthorizedHandler;
+    @Autowired
+    private JwtAuthenticationEntryPoint unauthorizedHandler;
 
-	@Bean
-	public JwtAuthenticationFilter jwtAuthenticationFilter() {
-		return new JwtAuthenticationFilter();
-	}
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter();
+    }
 
-	@Override
-	public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-		authenticationManagerBuilder
-				.userDetailsService(customUserDetailsService)
-				.passwordEncoder(passwordEncoder());
-	}
+    @Bean
+    public JwtAuthenticationResponse jwtResponse() {
+        return new JwtAuthenticationResponse();
+    }
 
-	
-	@Bean(BeanIds.AUTHENTICATION_MANAGER)
-	@Override
-	public AuthenticationManager authenticationManagerBean() throws Exception {
-		return super.authenticationManagerBean();
-	}
+    @Override
+    public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+        authenticationManagerBuilder
+                .userDetailsService(customUserDetailsService)
+                .passwordEncoder(passwordEncoder());
+    }
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean(BeanIds.AUTHENTICATION_MANAGER)
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.cors()
-				.and()
-				.csrf()
-				.disable()
-				.exceptionHandling()
-				.authenticationEntryPoint(unauthorizedHandler)
-				.and()
-				.sessionManagement()
-				.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-				.and()
-				.authorizeRequests()
-				.antMatchers("/",
-						"/favicon.ico",
-						"/**/*.png",
-						"/**/*.gif",
-						"/**/*.svg",
-						"/**/*.jpg",
-						"/**/*.html",
-						"/**/*.css",
-						"/**/*.js")
-				.permitAll()
-				.antMatchers("/api/auth/**")
-				.permitAll()
-				.antMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability")
-				.permitAll()
-				.antMatchers(HttpMethod.GET, "/api/user/admin/**", "/api/users/**")
-				.permitAll()
-				.anyRequest()
-				.authenticated();
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-		// Add our custom JWT security filter
-		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-//http.authorizeRequests().anyRequest().permitAll();
-	}
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.cors()
+                .and()
+                .csrf()
+                .disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(unauthorizedHandler)
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/",
+                        "/favicon.ico",
+                        "/**/*.png",
+                        "/**/*.gif",
+                        "/**/*.svg",
+                        "/**/*.jpg",
+                        "/**/*.html",
+                        "/**/*.css",
+                        "/**/*.js")
+                .permitAll()
+                .antMatchers(HttpMethod.GET,
+                        "/v2/api-docs",
+                        "/swagger-resources/**",
+                        "/swagger-ui.html**",
+                        "/webjars/**",
+                        "favicon.ico")
+                .permitAll()
+                .antMatchers("/api/auth/**")
+                .permitAll()
+                .antMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/api/user/admin/**", "/api/users/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated();
+
+        // Add our custom JWT security filter
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        //http.authorizeRequests().anyRequest().permitAll();
+    }
 }

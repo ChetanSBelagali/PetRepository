@@ -209,12 +209,6 @@ public class CSV
                   return discardLinefeed( in, stripMultipleNewlines );
                 else return false; 
               } else {
-                // Not one of EOF, double-quote,
-                // newline or line-feed. Means end of
-                // double-quote processing. Does NOT
-                // mean end-of-field or end-of-record.
-                // System.err.println("EOR on '" + c +
-                // "'");
                 in.reset();
                 break;
               }

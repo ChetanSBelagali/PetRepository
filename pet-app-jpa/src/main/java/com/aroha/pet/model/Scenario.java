@@ -24,7 +24,7 @@ public class Scenario implements Serializable {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private int scenarioId;
 	@NotBlank
 	@NotNull
 	private String scenarioTitle;
@@ -49,8 +49,13 @@ public class Scenario implements Serializable {
 	@OneToMany(mappedBy = "scenario")
 	private Set<Question>ques=new HashSet<Question>();
 
-	public int getId() {
-		return id;
+	
+	public int getScenarioId() {
+		return scenarioId;
+	}
+
+	public void setScenarioId(int scenarioId) {
+		this.scenarioId = scenarioId;
 	}
 
 	public String getScenarioTitle() {
@@ -79,10 +84,6 @@ public class Scenario implements Serializable {
 
 	public Set<Question> getQues() {
 		return ques;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public void setScenarioTitle(String scenarioTitle) {
@@ -121,11 +122,5 @@ public class Scenario implements Serializable {
 		this.fileName = fileName;
 	}
 
-	@Override
-	public String toString() {
-		return "Scenario [id=" + id + ", scenarioTitle=" + scenarioTitle + ", scenarioType=" + scenarioType
-				+ ", scenarioCode=" + scenarioCode + ", scenarioDesc=" + scenarioDesc + ", image="
-				+ Arrays.toString(image) + ", fileName=" + fileName + ", function=" + function + ", ques=" + ques + "]";
-	}
 
 }

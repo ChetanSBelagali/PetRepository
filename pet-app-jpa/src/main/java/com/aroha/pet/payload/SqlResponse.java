@@ -10,53 +10,53 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author Sony George | Date : 20 Mar, 2019 5:11:14 PM
  */
-public class SqlResponse implements Serializable{
-	
-	private DbInfo dbInfo;
-	private String sql;
-	private List result;
-	private String exception;
-	private String status;
-	
+public class SqlResponse implements Serializable {
+
+    private DbInfo dbInfo;
+    private String sql;
+    private List result;
+    private String exception;
+    private String status;
+
     @JsonIgnore
-	public DbInfo getDbInfo() {
-		return dbInfo;
-	}
+    public DbInfo getDbInfo() {
+        return dbInfo;
+    }
 
-	public void setDbInfo(DbInfo dbInfo) {
-		this.dbInfo = dbInfo;
-	}
+    public void setDbInfo(DbInfo dbInfo) {
+        this.dbInfo = dbInfo;
+    }
 
-	public String getSql() {
-		return sql;
-	}
+    public String getSql() {
+        return sql;
+    }
 
-	public void setSql(String sql) {
-		this.sql = sql;
-	}
+    public void setSql(String sql) {
+        this.sql = sql;
+    }
 
-	public List getResult() {
-		return result;
-	}
+    public List getResult() {
+        return result;
+    }
 
-	public void setResult(List result) {
-		this.result = result;
-	}
+    public void setResult(List result) {
+        this.result = result;
+    }
 
-	public String getException() {
-		return exception;
-	}
+    public String getException() {
+        return exception;
+    }
 
-	public void setException(String exception) {
-		this.exception = exception;
-	}
+    public void setException(String exception) {
+        this.exception = exception;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 }

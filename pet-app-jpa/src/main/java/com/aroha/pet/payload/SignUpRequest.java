@@ -3,147 +3,146 @@ package com.aroha.pet.payload;
 import javax.validation.constraints.*;
 
 /**
-  */
+ */
 public class SignUpRequest {
 
-	@NotBlank
-	@Size(min = 4, max = 40)
-	private String name;
+    @NotBlank(message = "Name can't be null")
+    @Size(min = 4, max = 40)
+    private String name;
 
-	@NotBlank
-	@Size(max = 40)
-	@Email
-	private String email;
-	@NotBlank
-	@Size(max = 20)
-	private String userType;//expected values are learner, mentor,admin
-	private String phoneNo;
-	private String altPhoneNo;
-	private String primarySkills;
-	private String secondarySkills;
-	@NotBlank
-	@Size(max = 150)
-	private String address;
-	private String dateOfJoin;
-	private String soe;
-	private String soeRef;
+    @NotBlank
+    @Size(max = 40)
+    @Email
+    private String email;
+    @NotBlank
+    @Size(max = 20)
+    private String userType;//expected values are learner, mentor,admin
+    private String phoneNo;
+    private String altPhoneNo;
+    private String primarySkills;
+    private String secondarySkills;
+    @NotBlank
+    @Size(max = 150)
+    private String address;
+    private String dateOfJoin;
+    private String soe;
+    private String soeRef;
     private int dbId;
-    
-	@NotBlank
-	@Size(min = 6, max = 20)
-	private String password;
 
-	public String getName() {
-		return name;
-	}
+    @NotBlank
+    @Size(min = 6, max = 20)
+    private String password;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public String getPhoneNo() {
-		return phoneNo;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public void setPhoneNo(String phoneNo) {
-		this.phoneNo = phoneNo;
-	}
+    public String getPhoneNo() {
+        return phoneNo;
+    }
 
-	public String getAltPhoneNo() {
-		return altPhoneNo;
-	}
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
 
-	public void setAltPhoneNo(String altPhoneNo) {
-		this.altPhoneNo = altPhoneNo;
-	}
+    public String getAltPhoneNo() {
+        return altPhoneNo;
+    }
 
-	public String getPrimarySkills() {
-		return primarySkills;
-	}
+    public void setAltPhoneNo(String altPhoneNo) {
+        this.altPhoneNo = altPhoneNo;
+    }
 
-	public void setPrimarySkills(String primarySkills) {
-		this.primarySkills = primarySkills;
-	}
+    public String getPrimarySkills() {
+        return primarySkills;
+    }
 
-	public String getSecondarySkills() {
-		return secondarySkills;
-	}
+    public void setPrimarySkills(String primarySkills) {
+        this.primarySkills = primarySkills;
+    }
 
-	public void setSecondarySkills(String secondarySkills) {
-		this.secondarySkills = secondarySkills;
-	}
+    public String getSecondarySkills() {
+        return secondarySkills;
+    }
 
-	public String getAddress() {
-		return address;
-	}
+    public void setSecondarySkills(String secondarySkills) {
+        this.secondarySkills = secondarySkills;
+    }
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public String getDateOfJoin() {
-		return dateOfJoin;
-	}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-	public void setDateOfJoin(String dateOfJoin) {
-		this.dateOfJoin = dateOfJoin;
-	}
+    public String getDateOfJoin() {
+        return dateOfJoin;
+    }
 
-	public String getSoe() {
-		return soe;
-	}
+    public void setDateOfJoin(String dateOfJoin) {
+        this.dateOfJoin = dateOfJoin;
+    }
 
-	public void setSoe(String soe) {
-		this.soe = soe;
-	}
+    public String getSoe() {
+        return soe;
+    }
 
-	public String getSoeRef() {
-		return soeRef;
-	}
+    public void setSoe(String soe) {
+        this.soe = soe;
+    }
 
-	public void setSoeRef(String soeRef) {
-		this.soeRef = soeRef;
-	}
+    public String getSoeRef() {
+        return soeRef;
+    }
 
-	public String getPassword() {
-		return password;
-	}
+    public void setSoeRef(String soeRef) {
+        this.soeRef = soeRef;
+    }
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public String getPassword() {
+        return password;
+    }
 
-	public String getUserType() {
-		return userType;
-	}
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-	public void setUserType(String userType) {
-		this.userType = userType;
-	}
+    public String getUserType() {
+        return userType;
+    }
 
-	public int getDbId() {
-		return dbId;
-	}
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
 
-	public void setDbId(int dbId) {
-		this.dbId = dbId;
-	}
+    public int getDbId() {
+        return dbId;
+    }
 
-	@Override
-	public String toString() {
-		return "SignUpRequest [name=" + name + ", email=" + email + ", userType=" + userType + ", phoneNo=" + phoneNo
-				+ ", altPhoneNo=" + altPhoneNo + ", primarySkills=" + primarySkills + ", secondarySkills="
-				+ secondarySkills + ", address=" + address + ", dateOfJoin=" + dateOfJoin + ", soe=" + soe + ", soeRef="
-				+ soeRef + ", dbId=" + dbId + ", password=" + password + "]";
-	}
-    
-	
+    public void setDbId(int dbId) {
+        this.dbId = dbId;
+    }
+
+    @Override
+    public String toString() {
+        return "SignUpRequest [name=" + name + ", email=" + email + ", userType=" + userType + ", phoneNo=" + phoneNo
+                + ", altPhoneNo=" + altPhoneNo + ", primarySkills=" + primarySkills + ", secondarySkills="
+                + secondarySkills + ", address=" + address + ", dateOfJoin=" + dateOfJoin + ", soe=" + soe + ", soeRef="
+                + soeRef + ", dbId=" + dbId + ", password=" + password + "]";
+    }
+
 }

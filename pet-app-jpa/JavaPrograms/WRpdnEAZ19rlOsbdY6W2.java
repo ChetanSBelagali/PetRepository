@@ -1,1 +1,0 @@
-class WRpdnEAZ19rlOsbdY6W2{public static void main(String[] args){System.out.println("Hello")}}

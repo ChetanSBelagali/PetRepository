@@ -8,13 +8,13 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,6 @@ import com.aroha.pet.model.DbInfo;
 import com.aroha.pet.model.QueryInfo;
 import com.aroha.pet.model.Question;
 import com.aroha.pet.model.User;
-import com.aroha.pet.payload.DBTypeDataRequest;
 import com.aroha.pet.payload.PagedResponse;
 import com.aroha.pet.payload.SqlResponse;
 import com.aroha.pet.repository.DBRepository;
@@ -49,64 +48,58 @@ public class DBService {
     private UserRepository userRepository;
     @Autowired
     QueryInfoService queryInfoService;
-    
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(DBService.class);
+
     public Optional<DbInfo> getDbInfoById(long id) {
-    	 return dBRepository.findById(id);
+        return dBRepository.findById(id);
     }
-    
-    public List<DbInfo> getAllDBInfoDataByUser(long userId){
-    	
-    	
-    	long roleId=userRepository.getRole(userId);
-    	//System.out.println("Role Id is: "+roleId);
-    	
-    	if(roleId==1) {
-    	
-    	Optional<User> users = userRepository.findById(userId);
-    	User user=users.get();
-    	List<DbInfo> list = new ArrayList<DbInfo>();
-    	for(DbInfo dbInfo: user.getDbs()) {
-    		DbInfo db=dbInfo;
-    		list.add(db);
-    	}
-    	return list;
-    	}else {
-    	List<DbInfo> list2=dBRepository.findDbFromID();
-    	return list2;
-    	}
-    	
-    }
-    
-    
-    
-    public List<DbInfo> getAllDBInfoByUserId(long userId){
-    /*	
-    	Optional<User> users= userRepository.findById(userId);
-    	User user=users.get();
-    	List<DBTypeDataRequest> listDataRequest = new ArrayList<>();
-    	for(DbInfo dbInfo: user.getDbs()) {
-    		DbInfo db=dbInfo;
-    		DBTypeDataRequest dbType=new DBTypeDataRequest();
-    		dbType.setDbName(db.getDbName());
-    		dbType.setDbType(db.getDbType());
-    		dbType.setId(db.getId());
-    		listDataRequest.add(dbType);
-    	}
-		return listDataRequest; 
 
-	*/	
-		
-		  List<DbInfo> list=dBRepository.findDbFromID(); 
-		  
-		  return list;
-		 
-    	          
-    }
-    
+    public List<DbInfo> getAllDBInfoDataByUser(long userId) {
 
-    
-    
+        long roleId = userRepository.getRole(userId);
+        //System.out.println("Role Id is: "+roleId);
+
+        if (roleId == 1) {
+
+            Optional<User> users = userRepository.findById(userId);
+            User user = users.get();
+            List<DbInfo> list = new ArrayList<DbInfo>();
+            for (DbInfo dbInfo : user.getDbs()) {
+                DbInfo db = dbInfo;
+                list.add(db);
+            }
+            return list;
+        } else {
+            List<DbInfo> list2 = dBRepository.findDbFromID();
+            return list2;
+        }
+
+    }
+
+    public List<DbInfo> getAllDBInfoByUserId(long userId) {
+        /*	
+         Optional<User> users= userRepository.findById(userId);
+         User user=users.get();
+         List<DBTypeDataRequest> listDataRequest = new ArrayList<>();
+         for(DbInfo dbInfo: user.getDbs()) {
+         DbInfo db=dbInfo;
+         DBTypeDataRequest dbType=new DBTypeDataRequest();
+         dbType.setDbName(db.getDbName());
+         dbType.setDbType(db.getDbType());
+         dbType.setId(db.getId());
+         listDataRequest.add(dbType);
+         }
+         return listDataRequest; 
+
+         */
+
+        List<DbInfo> list = dBRepository.findDbFromID();
+
+        return list;
+
+    }
+
     public PagedResponse<DbInfo> getDataBasesCreatedBy(UserPrincipal currentUser, int page, int size) {
 
         User user = userRepository.findByEmail(currentUser.getEmail())
@@ -127,8 +120,8 @@ public class DBService {
     public List<DbInfo> getAllDataBasesCreatedBy(UserPrincipal currentUser) {
         User user = userRepository.findByEmail(currentUser.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", currentUser.getEmail()));
-        
-        System.out.println("User Id: "+user.getId());
+
+        System.out.println("User Id: " + user.getId());
         return dBRepository.findAllByCreatedBy(user.getId());
     }
 
@@ -137,17 +130,13 @@ public class DBService {
     }
 
     public SqlResponse executeQuery(DbInfo dbInfo, final String sqlStr, final UserPrincipal currentUser, Question question) {
-        // Save the Request Object First
         QueryInfo queryInfo = new QueryInfo();
         String sqlStr1 = "";
         queryInfo.setSqlStr(sqlStr);
-        // Scenario
-        //System.out.println("Scenario in execute Query: "+scenario);
-        if(question.getQuestionDesc().equals("")){
+        if (question.getQuestionDesc().equals("")) {
             queryInfo.setScenario(null);
-            }
-        Question quesion=new Question();
-        queryInfo.setQuestionId(question.getId());
+        }
+        queryInfo.setQuestionId(question.getQuestionId());
         queryInfo.setScenario(question.getQuestionDesc());
         queryInfo.setDbType(dbInfo.getDbType());
         queryInfo.setJdbcUrl(dbInfo.getJdbcUrl());
@@ -163,48 +152,55 @@ public class DBService {
 
         try {
             con = getConnection(queryInfo.getJdbcUrl(), queryInfo.getUserName(), queryInfo.getPassword());
+            logger.info("Database connected successfully");
             /*
-			 * stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY,
-			 * ResultSet.CONCUR_READ_ONLY, ResultSet.FETCH_FORWARD);
+             * stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY,
+             * ResultSet.CONCUR_READ_ONLY, ResultSet.FETCH_FORWARD);
              */
             String res = sqlStr.trim();
             stmt = con.createStatement();
             JSONArray jsona = null;
-			/*
-			 * if (dbInfo.getDbType().equalsIgnoreCase("oracle") && res.charAt(res.length()
-			 * - 1) == ';') { sqlStr1 = sqlStr.substring(0, res.length() - 1); rs =
-			 * stmt.executeQuery(sqlStr1); } else { rs = stmt.executeQuery(res); }
-			 */
+            /*
+             * if (dbInfo.getDbType().equalsIgnoreCase("oracle") && res.charAt(res.length()
+             * - 1) == ';') { sqlStr1 = sqlStr.substring(0, res.length() - 1); rs =
+             * stmt.executeQuery(sqlStr1); } else { rs = stmt.executeQuery(res); }
+             */
 
-            if(dbInfo.getDbType().equalsIgnoreCase("oracle") ) {
-				if(res.charAt(res.length()-1)==';') res=res.substring(0,res.length()-1);
-			
-			String quarr[]=res.split(" ");
-			switch(quarr[0]) {
-			   case "desc": case "Desc":   case "Describe": case "describe":   case "DESCRIBE": case "DESC":
-				   res=res.replace(quarr[0], "select * from");
-				   rs = stmt.executeQuery(res);
-				   ResultSetMetaData rsmd=rs.getMetaData();
-				   jsona=getResultForRSMD(rsmd);
-			   break;
-			   default:
-				   rs = stmt.executeQuery(res);
-				   jsona= getResult(rs);
-				   break;
-			} 
-			}else {
-				rs = stmt.executeQuery(res);
-				jsona= getResult(rs);
-			}
-            
-           
+            if (dbInfo.getDbType().equalsIgnoreCase("oracle")) {
+                if (res.charAt(res.length() - 1) == ';') {
+                    res = res.substring(0, res.length() - 1);
+                }
+
+                String quarr[] = res.split(" ");
+                switch (quarr[0]) {
+                    case "desc":
+                    case "Desc":
+                    case "Describe":
+                    case "describe":
+                    case "DESCRIBE":
+                    case "DESC":
+                        res = res.replace(quarr[0], "select * from");
+                        rs = stmt.executeQuery(res);
+                        ResultSetMetaData rsmd = rs.getMetaData();
+                        jsona = getResultForRSMD(rsmd);
+                        break;
+                    default:
+                        rs = stmt.executeQuery(res);
+                        jsona = getResult(rs);
+                        break;
+                }
+            } else {
+                rs = stmt.executeQuery(res);
+                jsona = getResult(rs);
+            }
+
             sqlResponse.setResult(getJsonArrayAsList(jsona));
             queryInfo.setResultStr(jsona.toString());
             sqlResponse.setStatus("SUCCESS");
 
         } catch (Exception ex) {
+            logger.error("Database connection failed" + ex.getMessage());
             sqlResponse.setException(ex.getMessage());
-            System.out.println(ex);
             sqlResponse.setStatus("ERROR");
         } finally {
             try {
@@ -228,6 +224,7 @@ public class DBService {
         }
         queryInfo.setExceptionStr(sqlResponse.getException());
         queryInfoService.update(queryInfo);
+        logger.info("execute query saved successfully in table query_info");
         return sqlResponse;
     }
 
@@ -248,6 +245,7 @@ public class DBService {
         ResultSet rs = null;
         try {
             con = getConnection(dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
+            logger.info("Get table column list connection sucessfully");
             stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.FETCH_FORWARD);
             stmt.setMaxRows(1);
             stmt.setFetchSize(1);
@@ -255,9 +253,10 @@ public class DBService {
             ResultSetMetaData metadata = rs.getMetaData();
             int numColumns = metadata.getColumnCount();
             for (int i = 1; i <= numColumns; i++) {
-                columnList.put(metadata.getColumnName(i), metadata.getColumnTypeName(i) + "_" + metadata.getColumnDisplaySize(i)); //+metadata.getColumnClassName(i)
+                columnList.put(metadata.getColumnName(i), metadata.getColumnTypeName(i) + "(" + metadata.getColumnDisplaySize(i)+")"); //+metadata.getColumnClassName(i)
             }
         } catch (Exception ex) {
+            logger.error("Get table column list connection is failed " + ex.getMessage());
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -294,18 +293,18 @@ public class DBService {
         Connection conn = DriverManager.getConnection(jdbcUrl, userName, password);
         return conn;
     }
-    
+
     private JSONArray getResultForRSMD(ResultSetMetaData rsmd) throws Exception {
-		JSONArray json = new JSONArray();
-		int numColumns = rsmd.getColumnCount();
-		JSONObject obj = new JSONObject();
-		for(int k=1; k <=numColumns; k++) {
-				String column_name = rsmd.getColumnName(k);
-				obj.put(column_name,  rsmd.getColumnTypeName(k));
-		}
-		json.put(obj);
-		return json;
-	}
+        JSONArray json = new JSONArray();
+        int numColumns = rsmd.getColumnCount();
+        JSONObject obj = new JSONObject();
+        for (int k = 1; k <= numColumns; k++) {
+            String column_name = rsmd.getColumnName(k);
+            obj.put(column_name, rsmd.getColumnTypeName(k));
+        }
+        json.put(obj);
+        return json;
+    }
 
     private JSONArray getResult(ResultSet rs) throws Exception {
         JSONArray json = new JSONArray();
@@ -349,6 +348,7 @@ public class DBService {
         List<String> tableList = new ArrayList<String>();
         try {
             con = getConnection(dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
+            logger.info("Mysql show  table list connection successfully");
             stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
                     ResultSet.FETCH_FORWARD);
 
@@ -357,6 +357,7 @@ public class DBService {
                 tableList.add(rs.getString(1));
             }
         } catch (Exception ex) {
+            logger.error("Mysql table list connetion error " + ex.getMessage());
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -390,7 +391,7 @@ public class DBService {
         List<String> tableList = new ArrayList<String>();
         try {
             con = getConnection(dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
-
+            logger.info("Oracle table list connection successfully");
             stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
                     ResultSet.FETCH_FORWARD);
 
@@ -399,6 +400,7 @@ public class DBService {
                 tableList.add(rs.getString(1));
             }
         } catch (Exception ex) {
+            logger.error("Oracle table list connetion error " + ex.getMessage());
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -434,7 +436,7 @@ public class DBService {
         List<String> tableList = new ArrayList<String>();
         try {
             con = getConnection(dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
-
+            logger.info("Mysql select  table list connection successfully");
             stmt = con.createStatement();
 
             rs = stmt.executeQuery("select name from sys.tables");
@@ -442,6 +444,7 @@ public class DBService {
                 tableList.add(rs.getString(1));
             }
         } catch (Exception ex) {
+            logger.error("Mysql show table list connetion error " + ex.getMessage());
             throw new RuntimeException(ex);
         } finally {
             try {
@@ -475,7 +478,7 @@ public class DBService {
         List<String> tableList = new ArrayList<String>();
         try {
             con = getConnection(dbInfo.getJdbcUrl(), dbInfo.getUserName(), dbInfo.getPassword());
-
+            logger.info("PostGres select  table list connection successfully");
             stmt = con.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY,
                     ResultSet.FETCH_FORWARD);
 
@@ -484,6 +487,7 @@ public class DBService {
                 tableList.add(rs.getString(1));
             }
         } catch (Exception ex) {
+            logger.error("Postgres table list connetion error " + ex.getMessage());
             throw new RuntimeException(ex);
         } finally {
             try {

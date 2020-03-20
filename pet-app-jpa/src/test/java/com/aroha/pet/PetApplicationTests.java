@@ -28,8 +28,8 @@ public class PetApplicationTests {
     @Test
     public void contextLoads() {
         User adminUser = new User();
-        adminUser.setName("Admin");
-        adminUser.setEmail("admin@aroha.co.in");
+        adminUser.setName("AdminTEST");
+        adminUser.setEmail("adminTEST@aroha.co.in");
         adminUser.setPassword(passwordEncoder.encode("admin"));
         adminUser.setPhoneNo("9249876052");
         Set<Role> a = new HashSet<>();
